@@ -164,8 +164,8 @@ func (c *Client) Close() error {
 }
 
 // NewCustomClient return a custom client
-func NewCustomClient(appKey, host, scheme string) (*Client, error) {
-	ws, err := NewWSS(appKey, host, scheme)
+func NewCustomClient(appKey, host, scheme, client, protocol, version string) (*Client, error) {
+	ws, err := NewWSS(appKey, host, scheme, client, protocol, version)
 	if err != nil {
 		return nil, err
 	}
@@ -184,9 +184,10 @@ func NewCustomClient(appKey, host, scheme string) (*Client, error) {
 }
 
 // NewWSS return a websocket connexion
-func NewWSS(appKey, host, scheme string) (ws *websocket.Conn, err error) {
+func NewWSS(appKey, host, scheme, client, protocol, version string) (ws *websocket.Conn, err error) {
 	origin := "http://localhost/"
-	url := scheme + "://" + host + "/app/" + appKey + "?protocol=" + PROTOCOL_VERSION
+	url := scheme + "://" + host + "/app/" + appKey + "?" +
+		fmt.Sprintf("client=%s&protocol=%s&version=%s", client, protocol, version)
 	ws, err = websocket.Dial(url, "", origin)
 	if err != nil {
 		return nil, err
@@ -217,5 +218,5 @@ func NewWSS(appKey, host, scheme string) (ws *websocket.Conn, err error) {
 
 // NewClient initialize & return a Pusher client
 func NewClient(appKey string) (*Client, error) {
-	return NewCustomClient(appKey, "ws.pusherapp.com:443", "wss")
+	return NewCustomClient(appKey, "ws-mt1.pusher.com:443", "wss", ME, PROTOCOL_VERSION, VERSION)
 }
